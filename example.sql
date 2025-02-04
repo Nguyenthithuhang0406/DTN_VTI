@@ -23,3 +23,13 @@ evaluation_notes text
 
 ALTER TABLE TRAINEE
 ADD vti_account varchar(100) unique;
+
+create table GroupTest (
+GroupID int unsigned auto_increment primary key,
+GroupName nvarchar(100),
+CreatorID int unsigned,
+CreateDate date
+);
+
+select * from GroupTest;
+insert into GroupTest(GroupName, CreatorID, CreateDate) values ('Group 1', 1, '2025-02-04');
