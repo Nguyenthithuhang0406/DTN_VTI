@@ -6,31 +6,31 @@ drop database if exists TEST;
 
 create table Department (
 DepartmentID int unsigned auto_increment primary key,
-DepartmentName nvarchar(100) not null
+DepartmentName nvarchar(100) not null unique
 );
 
 create table Position (
 PositionID int unsigned auto_increment primary key,
-PositionName enum('Dev', 'Test', 'Scrum Master', 'PM') not null
+PositionName enum('Dev', 'Test', 'Scrum Master', 'PM') not null unique
 );
 
 create table Account (
 AccountID int unsigned auto_increment primary key,
 Email varchar(100) not null ,
-Username varchar(100) not null,
+Username varchar(100) not null unique,
 FullName nvarchar(100),
 DepartmentID int unsigned,
 PositionID int unsigned,
-CreateDate date default now(),
+CreateDate datetime default now(),
 foreign key (DepartmentID) references Department (DepartmentID),
 foreign key (PositionID) references Position (PositionID)
 );
 
 create table `Group` (
 GroupID int unsigned auto_increment primary key,
-GroupName nvarchar(100) not null,
+GroupName nvarchar(100) not null unique,
 CreatorID int unsigned,
-CreateDate date default now(),
+CreateDate datetime default now(),
 foreign key (CreatorID) references Account (AccountID)
 );
 
@@ -45,12 +45,12 @@ foreign key (AccountID) references Account (AccountID)
 
 create table TypeQuestion (
 TypeID int unsigned auto_increment primary key,
-TypeName enum('Essay', 'Multiple-Choice') not null
+TypeName enum('Essay', 'Multiple-Choice') not null unique
 );
 
 create table CategoryQuestion (
 CategoryID int unsigned auto_increment primary key,
-CategoryName nvarchar(50) not null
+CategoryName nvarchar(50) not null unique
 );
 
 create table Question (
@@ -59,7 +59,7 @@ Content nvarchar(500) not null,
 CategoryID int unsigned,
 TypeID int unsigned,
 CreatorID int unsigned,
-CreateDate date default now(),
+CreateDate datetime default now(),
 foreign key (CategoryID) references CategoryQuestion (CategoryID),
 foreign key (TypeID) references TypeQuestion (TypeID),
 foreign key (CreatorID) references Account (AccountID)
@@ -78,16 +78,16 @@ ExamID int unsigned auto_increment primary key,
 Code varchar(20),
 Title nvarchar(100) not null,
 CategoryID int unsigned,
-Duration datetime not null,
+Duration int unsigned not null,
 CreatorID int unsigned,
-CreateDate date default now(),
+CreateDate datetime default now(),
 foreign key (CategoryID) references CategoryQuestion (CategoryID),
 foreign key (CreatorID) references Account (AccountID)
 );
 
  -- thay doi kieu du lieu mot truong trong bang
-ALTER TABLE Exam 
-MODIFY COLUMN Duration int;
+-- ALTER TABLE Exam 
+-- MODIFY COLUMN Duration int;
 
 create table ExamQuestion (
 ExamID int unsigned auto_increment,
@@ -101,3 +101,4 @@ foreign key (QuestionID) references Question (QuestionID)
 -- tên trường  kiểu dữ liệu  ràng buộc
 
 -- ràng buộc: primary key, foreign key, not null, default, unique (duy nhất), check
+
