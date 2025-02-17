@@ -99,12 +99,14 @@ SELECT
     a.*,
     COUNT( distinct case WHEN b.PositionName = 'Dev' THEN 1 END) AS Dev_Count,
     COUNT(distinct CASE WHEN b.PositionName = 'Test' THEN 1 END) AS Test_Count,
-    COUNT(distinct CASE WHEN b.PositionName = 'Scrum Master' THEN 1 END) AS Scrum_Master_Count
+    COUNT(distinct CASE WHEN b.PositionName = 'Scrum Master' THEN 1 END) AS Scrum_Master_Count,
+    COUNT( distinct case WHEN b.PositionName = 'PM' THEN 1 END) AS PM_Count
 FROM account c
 JOIN department a ON a.DepartmentID = c.DepartmentID
 JOIN position b ON c.PositionID = b.PositionID
-GROUP BY a.DepartmentID;
-
+GROUP BY a.DepartmentName;
+    
+    
 -- cau 12
 -- Lấy thông tin chi tiết của câu hỏi bao gồm: thông tin cơ bản của question, loại câu hỏi, ai là người tạo ra câu hỏi, câu trả lời là gì, ...
 select *
@@ -116,21 +118,43 @@ on a.CreatorID = c.AccountID
 inner join answer d
 on d.QuestionID = a.QuestionID;
 
+-- cach 2: gom tat ca cau tra loi cua 1 cau hoi
+SELECT 
+    q.QuestionID,
+    q.Content AS QuestionContent,
+    tq.TypeName AS QuestionType,
+    a.FullName AS CreatorName,
+    a.Email AS CreatorEmail,
+    a.Username AS CreatorUsername,
+    GROUP_CONCAT(a1.Content SEPARATOR ', ') AS Answers
+FROM 
+    question q
+JOIN 
+    typequestion tq ON q.TypeID = tq.TypeID
+JOIN 
+    account a ON q.CreatorID = a.AccountID
+JOIN 
+    answer a1 ON q.QuestionID = a1.QuestionID
+GROUP BY 
+    q.QuestionID;
+    
+    
 -- cau 13
 -- Lấy ra số lượng câu hỏi của mỗi loại tự luận hay trắc nghiệm
-
+select t.TypeName, count(q.QuestionID)
+from typequestion t
+left join question q
+on t.TypeID = q.TypeID
+group by t.TypeID;
 
 -- cau 14
 -- Lấy ra group không có account nào
 select a.*
 from `group` a
-inner join groupaccount b
+left join groupaccount b
 on a.GroupID = b.GroupID
-where a.GroupID not in (
-					select GroupID
-                    from groupaccount
-                    group by GroupID);
-                    
+where b.GroupID is null;
+
 -- cau 15
 -- trung cau 14
 
@@ -138,13 +162,10 @@ where a.GroupID not in (
 -- Lấy ra question không có answer nào
 select a.*
 from question a
-inner join answer b
+left join answer b
 on a.QuestionID = b.QuestionID
-where a.QuestionID not in (
-						select QuestionID
-                        from answer
-                        group by QuestionID);
-                        
+where b.AnswerID is null;
+
 -- cau 17
 -- Lấy các account thuộc nhóm thứ 1
 select a.* 
